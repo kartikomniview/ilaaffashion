@@ -1,5 +1,6 @@
 export const site = {
   name: "ilaaf Fashion House",
+  url: "https://ilaaffashion.com",
   address: {
     line1: "Shop No. 1, Jahangirabad Square",
     line2: "Near Extol College",

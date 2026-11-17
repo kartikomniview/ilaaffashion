@@ -27,6 +27,10 @@ const description =
   "ilaaf Fashion House is a women's clothing label at Jahangirabad Square, Bhopal, Madhya Pradesh. Our first collection is on the hanger — launching soon.";
 
 export const metadata: Metadata = {
+  // Canonical domain: share images and links resolve against this.
+  // www.ilaaffashion.com should redirect here (set in the hosting provider's domain settings).
+  metadataBase: new URL("https://ilaaffashion.com"),
+  alternates: { canonical: "/" },
   title,
   description,
   keywords: [
@@ -42,9 +46,17 @@ export const metadata: Metadata = {
   openGraph: {
     title,
     description,
+    url: "/",
     siteName: "ilaaf Fashion House",
     locale: "en_IN",
     type: "website",
+    // Image comes from app/opengraph-image.jpg (file convention).
+  },
+  twitter: {
+    // Square share image → "summary" (square thumbnail); "summary_large_image" would crop it to 2:1.
+    card: "summary",
+    title,
+    description,
   },
 };
 

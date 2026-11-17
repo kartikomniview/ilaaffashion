@@ -14,6 +14,8 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ClothingStore",
   name: site.name,
+  url: site.url,
+  image: `${site.url}/opengraph-image.jpg`,
   description: "Women's clothing label in Bhopal, Madhya Pradesh. Opening soon.",
   address: {
     "@type": "PostalAddress",
