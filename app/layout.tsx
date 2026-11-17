@@ -26,6 +26,9 @@ const title = "ilaaf Fashion House — Coming Soon to Bhopal";
 const description =
   "ilaaf Fashion House is a women's clothing label at Jahangirabad Square, Bhopal, Madhya Pradesh. Our first collection is on the hanger — launching soon.";
 
+const shareImageAlt =
+  "ilaaf Fashion House: a model in a maroon silk anarkali with gold zari embroidery on the neckline and cuffs, and a sheer gold organza dupatta.";
+
 export const metadata: Metadata = {
   // Canonical domain: share images and links resolve against this.
   // www.ilaaffashion.com should redirect here (set in the hosting provider's domain settings).
@@ -50,13 +53,26 @@ export const metadata: Metadata = {
     siteName: "ilaaf Fashion House",
     locale: "en_IN",
     type: "website",
-    // Image comes from app/opengraph-image.jpg (file convention).
+    // Served as a static file from /public so the host sends a Content-Length header.
+    // (The app/opengraph-image.jpg route was streamed without one, and WhatsApp drops such images.)
+    // Landscape 1.91:1 → WhatsApp shows a large preview with the image on top and text below
+    // (a square image would get a small thumbnail beside the text).
+    // Change the filename whenever the image changes, so apps fetch a fresh copy.
+    images: [
+      {
+        url: "/og-share.jpg",
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt: shareImageAlt,
+      },
+    ],
   },
   twitter: {
-    // Square share image → "summary" (square thumbnail); "summary_large_image" would crop it to 2:1.
-    card: "summary",
+    card: "summary_large_image",
     title,
     description,
+    images: [{ url: "/og-share.jpg", alt: shareImageAlt }],
   },
 };
 

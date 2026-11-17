@@ -15,7 +15,7 @@ const jsonLd = {
   "@type": "ClothingStore",
   name: site.name,
   url: site.url,
-  image: `${site.url}/opengraph-image.jpg`,
+  image: `${site.url}/og-share.jpg`,
   description: "Women's clothing label in Bhopal, Madhya Pradesh. Opening soon.",
   address: {
     "@type": "PostalAddress",
