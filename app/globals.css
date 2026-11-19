@@ -48,7 +48,6 @@
   --color-warning: var(--warning);
   --font-serif: var(--font-cormorant);
   --font-sans: var(--font-jost);
-  --font-hindi: var(--font-tiro-hindi);
 }
 
 body {
@@ -67,14 +66,57 @@ body {
     radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, color-mix(in srgb, var(--primary) 6%, transparent) 100%);
 }
 /* Fine organic grain, like handmade paper / raw silk. Tinted with --text-primary (#3A2525). */
-.silk-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
+.silk-bg::before,
+.grain {
   pointer-events: none;
   opacity: 0.07;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.23 0 0 0 0 0.15 0 0 0 0 0.15 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.silk-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* Gold focus ring used across links, buttons and inputs. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+}
+
+/* Square checkbox in the brand colours (browsers draw their own with rounded corners). */
+@utility checkbox {
+  appearance: none;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--text-secondary);
+  border-radius: 0;
+  background: var(--surface) center / 100% no-repeat;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+  &:hover:not(:disabled) {
+    border-color: var(--primary);
+  }
+  &:checked {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='1.8'/%3E%3C/svg%3E");
+  }
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Horizontal rails scroll without a visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ---------- Mandala behind the portrait ---------- */
@@ -102,12 +144,12 @@ body {
 }
 
 /* ---------- Model portrait ---------- */
-/* Photo rises into the arch like a curtain lifting. */
-.arch-reveal {
+/* Photo rises into its frame like a curtain lifting. */
+.photo-reveal {
   clip-path: inset(100% 0 0 0);
-  animation: arch-reveal 1.4s cubic-bezier(0.7, 0, 0.2, 1) 0.3s forwards;
+  animation: photo-reveal 1.4s cubic-bezier(0.7, 0, 0.2, 1) 0.3s forwards;
 }
-@keyframes arch-reveal {
+@keyframes photo-reveal {
   to {
     clip-path: inset(0 0 0 0);
   }
@@ -212,6 +254,86 @@ body {
   }
 }
 
+/* ---------- Fabric patterns ----------
+   Pure-CSS textiles used for the floating patches and as product image placeholders.
+   --c1 is the ground colour, --c2 the motif colour, --c3 a light tint (leheriya only).
+   With no variables set they fall back to the brand palette (the coming-soon patches). */
+.fabric-bandhani {
+  /* Tie-dye dot clusters */
+  background:
+    radial-gradient(circle at 25% 25%, var(--surface) 1.4px, transparent 1.9px) 0 0 / 18px 18px,
+    radial-gradient(circle at 75% 75%, var(--surface) 1.4px, transparent 1.9px) 0 0 / 18px 18px,
+    radial-gradient(circle at 75% 25%, var(--c2, var(--secondary)) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
+    radial-gradient(circle at 25% 75%, var(--c2, var(--secondary)) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
+    var(--c1, var(--primary));
+}
+.fabric-leheriya {
+  /* Diagonal wave stripes */
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--c2, var(--secondary)) 0 4px,
+    var(--c3, var(--accent)) 4px 8px,
+    var(--c1, var(--primary-hover)) 8px 10px,
+    var(--c3, var(--accent)) 10px 14px
+  );
+}
+.fabric-buti {
+  /* Block-print flower clusters (Bagh-print feel) */
+  background:
+    radial-gradient(circle at 50% 50%, var(--gold) 1.3px, transparent 1.8px) 0 0 / 18px 18px,
+    radial-gradient(circle at 50% 30%, var(--c2, var(--primary)) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
+    radial-gradient(circle at 50% 70%, var(--c2, var(--primary)) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
+    radial-gradient(circle at 30% 50%, var(--c2, var(--primary)) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
+    radial-gradient(circle at 70% 50%, var(--c2, var(--primary)) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
+    var(--c1, var(--background));
+}
+.fabric-zari {
+  /* Silk with metallic dots and a soft sheen */
+  background:
+    linear-gradient(135deg, transparent 25%, color-mix(in srgb, var(--surface) 35%, transparent) 50%, transparent 75%),
+    radial-gradient(circle, color-mix(in srgb, var(--c2, var(--surface)) 55%, transparent) 1px, transparent 1.5px) 0 0 / 10px 10px,
+    var(--c1, var(--gold));
+}
+.fabric-ikat {
+  /* Feathered zigzag diamonds */
+  background:
+    linear-gradient(135deg, var(--c2, var(--secondary)) 22%, transparent 27%) -12px 0 / 24px 24px,
+    linear-gradient(225deg, var(--c2, var(--secondary)) 22%, transparent 27%) -12px 0 / 24px 24px,
+    linear-gradient(315deg, var(--c2, var(--secondary)) 22%, transparent 27%) 0 0 / 24px 24px,
+    linear-gradient(45deg, var(--c2, var(--secondary)) 22%, transparent 27%) 0 0 / 24px 24px,
+    var(--c1, var(--primary));
+}
+.fabric-chikankari {
+  /* Fine tone-on-tone flowers with a scatter of tiny dots */
+  --m: color-mix(in srgb, var(--c2, var(--primary)) 70%, transparent);
+  background:
+    radial-gradient(circle at 50% 50%, var(--m) 1px, transparent 1.5px) 12px 12px / 24px 24px,
+    radial-gradient(circle at 50% 30%, var(--m) 1.8px, transparent 2.3px) 0 0 / 24px 24px,
+    radial-gradient(circle at 50% 70%, var(--m) 1.8px, transparent 2.3px) 0 0 / 24px 24px,
+    radial-gradient(circle at 30% 50%, var(--m) 1.8px, transparent 2.3px) 0 0 / 24px 24px,
+    radial-gradient(circle at 70% 50%, var(--m) 1.8px, transparent 2.3px) 0 0 / 24px 24px,
+    var(--c1, var(--background));
+}
+.fabric-floral {
+  /* Larger flowers, staggered */
+  background:
+    radial-gradient(circle at 50% 50%, var(--gold) 1.8px, transparent 2.3px) 0 0 / 32px 32px,
+    radial-gradient(circle at 50% 34%, var(--c2, var(--secondary)) 3.4px, transparent 3.9px) 0 0 / 32px 32px,
+    radial-gradient(circle at 50% 66%, var(--c2, var(--secondary)) 3.4px, transparent 3.9px) 0 0 / 32px 32px,
+    radial-gradient(circle at 34% 50%, var(--c2, var(--secondary)) 3.4px, transparent 3.9px) 0 0 / 32px 32px,
+    radial-gradient(circle at 66% 50%, var(--c2, var(--secondary)) 3.4px, transparent 3.9px) 0 0 / 32px 32px,
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--c2, var(--secondary)) 60%, transparent) 1.6px, transparent 2px) 16px 16px / 32px 32px,
+    var(--c1, var(--primary));
+}
+.fabric-solid {
+  /* Plain weave with a slub texture */
+  background:
+    linear-gradient(135deg, transparent 30%, color-mix(in srgb, var(--surface) 18%, transparent) 50%, transparent 70%),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--surface) 10%, transparent) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--text-primary) 6%, transparent) 0 1px, transparent 1px 4px),
+    var(--c1, var(--accent));
+}
+
 /* ---------- Floating fabric patches ---------- */
 .patch {
   position: absolute;
@@ -223,43 +345,11 @@ body {
   animation: float 9s ease-in-out infinite;
   animation-delay: var(--d, 0s);
 }
-/* Bandhani: tie-dye dot clusters on maroon */
-.patch-bandhani {
-  background:
-    radial-gradient(circle at 25% 25%, var(--surface) 1.4px, transparent 1.9px) 0 0 / 18px 18px,
-    radial-gradient(circle at 75% 75%, var(--surface) 1.4px, transparent 1.9px) 0 0 / 18px 18px,
-    radial-gradient(circle at 75% 25%, var(--secondary) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
-    radial-gradient(circle at 25% 75%, var(--secondary) 1.2px, transparent 1.7px) 0 0 / 18px 18px,
-    var(--primary);
+.patch.fabric-bandhani {
   outline-color: var(--secondary);
 }
-/* Leheriya: diagonal wave stripes */
-.patch-leheriya {
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--secondary) 0 4px,
-    var(--accent) 4px 8px,
-    var(--primary-hover) 8px 10px,
-    var(--accent) 10px 14px
-  );
-}
-/* Buti: block-print flower clusters (Bagh-print feel) */
-.patch-buti {
-  background:
-    radial-gradient(circle at 50% 50%, var(--gold) 1.3px, transparent 1.8px) 0 0 / 18px 18px,
-    radial-gradient(circle at 50% 30%, var(--primary) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
-    radial-gradient(circle at 50% 70%, var(--primary) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
-    radial-gradient(circle at 30% 50%, var(--primary) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
-    radial-gradient(circle at 70% 50%, var(--primary) 1.6px, transparent 2.1px) 0 0 / 18px 18px,
-    var(--background);
+.patch.fabric-buti {
   outline-color: var(--gold);
-}
-/* Zari: gold silk with a soft sheen */
-.patch-zari {
-  background:
-    linear-gradient(135deg, transparent 25%, color-mix(in srgb, var(--surface) 35%, transparent) 50%, transparent 75%),
-    radial-gradient(circle, color-mix(in srgb, var(--surface) 55%, transparent) 1px, transparent 1.5px) 0 0 / 10px 10px,
-    var(--gold);
 }
 @keyframes float {
   0%, 100% {
@@ -310,12 +400,36 @@ body {
   transform: scaleY(-1);
 }
 .marquee {
-  animation: marquee 32s linear infinite;
+  animation: marquee var(--marquee-duration, 32s) linear infinite;
+}
+/* Hovering a strip marked .marquee-pause holds it still so it can be read. */
+.marquee-pause:hover .marquee {
+  animation-play-state: paused;
 }
 @keyframes marquee {
   to {
     transform: translateX(-50%);
   }
+}
+
+/* ---------- Drawers (mobile menu, filter panel) ---------- */
+.drawer[open] {
+  animation: drawer-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (max-width: 1023.98px) {
+  .drawer-panel {
+    animation: drawer-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+/* The footer uses the ribbon's top gota edge only (a bottom edge would hang off the page). */
+.ribbon-top::after {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
