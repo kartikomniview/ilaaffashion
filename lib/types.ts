@@ -118,6 +118,8 @@ export interface HeroSlide {
   id: string;
   /** Absolute image URL. Its host must be allowed in next.config.ts (images.remotePatterns). */
   src: string;
+  /** Version of the same banner for phones (1199×1312), shown in place of `src` below the `sm` breakpoint. */
+  mobileSrc: string;
   /** Short name used by the slider controls, e.g. "Show slide 2: Velvet Elegance". */
   title: string;
   /** Describes the banner, including any text printed on it (screen readers can't read that). */

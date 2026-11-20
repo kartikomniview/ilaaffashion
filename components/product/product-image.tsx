@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { CategorySlug, Pattern, Product } from "@/lib/types";
+import { cropStyle, scaleSizes, type ProductView } from "@/lib/product-views";
 import { cssVars, cx } from "@/lib/style";
 import { fabricVars } from "@/components/product/fabric-swatch";
 import { GarmentFigure } from "@/components/product/garment-icon";
@@ -87,5 +88,39 @@ export function ProductImage({
       colors={[color.hex, motif]}
       className={className}
     />
+  );
+}
+
+/**
+ * One gallery view filling its frame: the photo, or a zoomed-in crop of it (see lib/product-views).
+ * `sizes` is for the frame; crops automatically ask for a proportionally larger file.
+ */
+export function ProductViewImage({
+  view,
+  sizes,
+  alt = view.alt,
+  preload,
+  className,
+}: {
+  view: ProductView;
+  sizes: string;
+  alt?: string;
+  preload?: boolean;
+  className?: string;
+}) {
+  const { crop } = view;
+  return (
+    <div className={cx("overflow-hidden bg-accent", className ?? "relative")}>
+      <Image
+        src={view.src}
+        alt={alt}
+        fill
+        sizes={crop ? scaleSizes(sizes, crop.zoom) : sizes}
+        preload={preload}
+        draggable={false}
+        className={cx("object-cover", !crop && "object-[50%_25%]")}
+        style={crop && cropStyle(crop)}
+      />
+    </div>
   );
 }

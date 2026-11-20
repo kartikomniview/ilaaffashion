@@ -12,7 +12,7 @@ import {
   type PointerEvent,
   type TransitionEvent,
 } from "react";
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import Link from "next/link";
 import type { HeroSlide } from "@/lib/types";
 import { cx } from "@/lib/style";
@@ -21,6 +21,10 @@ const SLIDE_MS = 5000;
 const DRAG_START_PX = 8; // movement before a press counts as a drag rather than a tap
 const SWIPE_MIN_PX = 50; // drag distance that moves to the next slide
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+// Tailwind's `sm` breakpoint: narrower screens get the mobile banner, and the slider's aspect ratio
+// switches at the same width. Both ratios match the banner files exactly (mobile 1199×1312), so the
+// slider is exactly as tall as the image and nothing is cropped. Update them if the banners change.
+const WIDE_SCREEN = "(min-width: 40rem)";
 
 function subscribeReducedMotion(onChange: () => void) {
   const query = window.matchMedia(REDUCED_MOTION);
@@ -160,7 +164,7 @@ export function HeroSlider({ slides, label }: { slides: HeroSlide[]; label: stri
       aria-describedby={loops ? hintId : undefined}
       tabIndex={loops ? 0 : undefined}
       className={cx(
-        "relative mx-auto aspect-[2.12/1] max-w-[1920px] touch-pan-y select-none overflow-hidden border-b border-gold/50 bg-background focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-primary",
+        "relative mx-auto aspect-[1199/1312] max-w-[1920px] sm:aspect-[2.12/1] touch-pan-y select-none overflow-hidden border-b border-gold/50 bg-background focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-primary",
         dragging && "cursor-grabbing"
       )}
       onKeyDown={onKeyDown}
@@ -199,17 +203,7 @@ export function HeroSlider({ slides, label }: { slides: HeroSlide[]; label: stri
                 draggable={false}
                 className="relative block size-full focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-primary"
               >
-                <Image
-                  src={slide.src}
-                  alt={slide.alt}
-                  fill
-                  preload={isFirst}
-                  // Off-screen slides must already be loaded when they're swiped in.
-                  loading={isFirst ? undefined : "eager"}
-                  sizes="(min-width: 1920px) 1920px, 100vw"
-                  draggable={false}
-                  className="object-cover"
-                />
+                <SlideImage slide={slide} first={isFirst} />
               </Link>
             </div>
           );
@@ -222,5 +216,31 @@ export function HeroSlider({ slides, label }: { slides: HeroSlide[]; label: stri
         </p>
       )}
     </div>
+  );
+}
+
+/** The wide banner on larger screens, its portrait version on phones (art direction via <picture>). */
+function SlideImage({ slide, first }: { slide: HeroSlide; first: boolean }) {
+  const common = { alt: slide.alt, fill: true, draggable: false, className: "object-cover" };
+  const { props: wide } = getImageProps({
+    ...common,
+    src: slide.src,
+    sizes: "(min-width: 1920px) 1920px, 100vw",
+  });
+  const { props: portrait } = getImageProps({
+    ...common,
+    src: slide.mobileSrc,
+    sizes: "100vw",
+    // Off-screen slides must already be loaded when they're swiped in. <picture> downloads only the
+    // source that matches the screen, so this never fetches both versions.
+    loading: "eager",
+    fetchPriority: first ? "high" : undefined,
+  });
+
+  return (
+    <picture>
+      <source media={WIDE_SCREEN} srcSet={wide.srcSet} sizes={wide.sizes} />
+      <img {...portrait} alt={slide.alt} />
+    </picture>
   );
 }

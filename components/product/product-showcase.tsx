@@ -6,12 +6,11 @@ import type { Product } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { mapsUrl, site } from "@/lib/site";
 import { whatsappUrl } from "@/lib/whatsapp";
-import { cx } from "@/lib/style";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { ProductImage } from "@/components/product/product-image";
+import { ProductGallery } from "@/components/product/product-gallery";
 
 /** Gallery plus colour/size pickers and the WhatsApp order button, sharing the selected options. */
 export function ProductShowcase({
@@ -23,11 +22,9 @@ export function ProductShowcase({
   categoryName: string;
   url: string;
 }) {
-  const hasPhotos = product.images.length > 0;
   const onlySize = product.sizes.length === 1 ? product.sizes[0] : undefined;
 
   const [colorIndex, setColorIndex] = useState(0);
-  const [imageIndex, setImageIndex] = useState(0);
   const [size, setSize] = useState<string | undefined>(onlySize);
   const [sizeError, setSizeError] = useState(false);
   const sizeGroupRef = useRef<HTMLFieldSetElement>(null);
@@ -46,63 +43,10 @@ export function ProductShowcase({
       ].join("\n")
     : [`Hi ${site.name}! Will ${product.name} (${product.id}) be back in stock?`, `Colour: ${color.name}`, url].join("\n");
 
-  // Thumbnails: real photos when there are some, otherwise one placeholder per colourway.
-  const thumbs = hasPhotos ? product.images.map((_, i) => i) : product.colors.map((_, i) => i);
-
   return (
     <div className="grid gap-7 md:grid-cols-2 md:gap-10 lg:gap-16">
-      {/* Gallery */}
       <div className="md:sticky md:top-28 md:self-start">
-        {/* Just the photo, like the product cards: no shadow, frame or big radius. */}
-        <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
-          <ProductImage
-            product={product}
-            colorIndex={colorIndex}
-            imageIndex={imageIndex}
-            sizes="(min-width: 768px) 45vw, 92vw"
-            preload
-            className="absolute inset-0"
-          />
-          {!product.inStock && (
-            <Badge tone="muted" className="absolute bottom-4 left-4">
-              Sold out
-            </Badge>
-          )}
-        </div>
-
-        {thumbs.length > 1 && (
-          <ul className="mt-4 flex gap-3" aria-label={hasPhotos ? "Photos" : "Colourways"}>
-            {thumbs.map((i) => {
-              const active = hasPhotos ? imageIndex === i : colorIndex === i;
-              return (
-                <li key={i}>
-                  <button
-                    type="button"
-                    onClick={() => (hasPhotos ? setImageIndex(i) : setColorIndex(i))}
-                    aria-label={hasPhotos ? `Photo ${i + 1}` : product.colors[i].name}
-                    aria-pressed={active}
-                    className={cx(
-                      "focus-ring relative block aspect-[3/4] w-16 overflow-hidden rounded-sm ring-1 transition sm:w-20",
-                      active ? "ring-2 ring-primary" : "ring-gold/40 opacity-75 hover:opacity-100"
-                    )}
-                  >
-                    <ProductImage
-                      product={product}
-                      colorIndex={hasPhotos ? colorIndex : i}
-                      imageIndex={hasPhotos ? i : 0}
-                      alt=""
-                      sizes="80px"
-                      className="absolute inset-0"
-                    />
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        {!hasPhotos && (
-          <p className="mt-3 text-xs text-muted">Illustration only. Photos of this piece are coming soon.</p>
-        )}
+        <ProductGallery product={product} colorIndex={colorIndex} onColorChange={setColorIndex} />
       </div>
 
       {/* Details and ordering */}
@@ -133,10 +77,7 @@ export function ProductShowcase({
                     name={`${uid}-color`}
                     value={c.name}
                     checked={colorIndex === i}
-                    onChange={() => {
-                      setColorIndex(i);
-                      if (!hasPhotos) setImageIndex(0);
-                    }}
+                    onChange={() => setColorIndex(i)}
                     className="peer sr-only"
                   />
                   <span className="sr-only">{c.name}</span>
