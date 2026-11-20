@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/ui/json-ld";
 import { Hero } from "@/components/home/hero";
 import { CategoryShowcase } from "@/components/home/category-showcase";
 import { ProductRail } from "@/components/home/product-rail";
+import { OfferBanners } from "@/components/home/offer-banners";
 import { OccasionTiles } from "@/components/home/occasion-tiles";
 import { VisitShowroom } from "@/components/home/visit-showroom";
 
@@ -37,6 +38,8 @@ export default function Home() {
     <>
       <Hero />
       <CategoryShowcase />
+
+      <OfferBanners />
 
       <ProductRail
         id="new"

@@ -113,13 +113,24 @@ export interface ProductFilters {
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 
-/** A full-width banner in the home page hero slider. */
-export interface HeroSlide {
+/** What the search box suggests underneath itself while someone types (served by /api/search). */
+export interface SearchSuggestions {
+  q: string;
+  /** Categories the words name or start to name, with how many styles each has. */
+  categories: { slug: CategorySlug; name: string; count: number }[];
+  /** The best few matching products. */
+  products: { slug: string; name: string; price: number; image?: string; category: string; inStock: boolean }[];
+  /** False when nothing matched every word and `products` are the closest styles instead. */
+  exact: boolean;
+}
+
+/** A banner in one of the home page sliders (the hero, the offers). */
+export interface BannerSlide {
   id: string;
   /** Absolute image URL. Its host must be allowed in next.config.ts (images.remotePatterns). */
   src: string;
-  /** Version of the same banner for phones (1199×1312), shown in place of `src` below the `sm` breakpoint. */
-  mobileSrc: string;
+  /** Optional version of the same banner for phones, shown in place of `src` below the `sm` breakpoint. */
+  mobileSrc?: string;
   /** Short name used by the slider controls, e.g. "Show slide 2: Velvet Elegance". */
   title: string;
   /** Describes the banner, including any text printed on it (screen readers can't read that). */

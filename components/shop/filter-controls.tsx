@@ -3,10 +3,10 @@
 // Form controls for the /products filter form. They're uncontrolled (so typing and ticking feel
 // instant) but re-sync with the URL when it changes from elsewhere, e.g. removing a filter chip.
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowDownUp, ChevronDown, Search } from "lucide-react";
+import { ArrowDownUp, ChevronDown } from "lucide-react";
 import type { SortKey } from "@/lib/types";
 import { cx } from "@/lib/style";
-import { SEARCH_PLACEHOLDER, searchIconClass, searchInputClass } from "@/components/shop/search-bar";
+import { SearchBox } from "@/components/shop/search-box";
 
 export function FilterCheckbox({
   name,
@@ -46,30 +46,16 @@ export function FilterCheckbox({
   );
 }
 
+/** The search box on /products, with suggestions underneath. Results also update live as you type. */
 export function SearchField({ q, id = "search" }: { q: string; id?: string }) {
-  const ref = useRef<HTMLInputElement>(null);
-  // Don't overwrite what someone is typing; only sync when the box isn't focused.
-  useEffect(() => {
-    const el = ref.current;
-    if (el && document.activeElement !== el) el.value = q;
-  }, [q]);
-
   return (
-    <div role="search" className="relative">
-      <label htmlFor={id} className="sr-only">
-        Search products
-      </label>
-      <Search aria-hidden className={searchIconClass()} strokeWidth={1.75} />
-      <input
-        ref={ref}
+    <div role="search">
+      <SearchBox
         id={id}
-        name="q"
-        type="search"
         defaultValue={q}
-        placeholder={SEARCH_PLACEHOLDER}
-        autoComplete="off"
-        enterKeyHint="search"
-        className={cx(searchInputClass(), "scroll-mt-36")}
+        inputClassName="scroll-mt-36"
+        // On phones the box shares its row with the sort and filter buttons; the suggestions use the whole row.
+        popupClassName="left-0 w-[calc(100vw-2rem)] sm:w-full"
       />
     </div>
   );

@@ -1,9 +1,10 @@
-// Catalogue queries: lookups, search, faceted filtering, sorting and URL building.
+// Catalogue queries: lookups, faceted filtering, sorting and URL building. Search is in lib/search.ts.
 // Everything here is pure and synchronous over the local dummy data. When products move to a
 // CMS or API, keep these signatures and swap the internals (make them async if needed).
 import { categories } from "@/data/categories";
 import { colors } from "@/data/colors";
 import { products } from "@/data/products";
+import { categoriesInQuery, searchProducts } from "@/lib/search";
 import {
   CATEGORY_SLUGS,
   FABRICS,
@@ -17,6 +18,7 @@ import {
   type Product,
   type ProductFilters,
   type SearchParams,
+  type SearchSuggestions,
   type SortKey,
 } from "@/lib/types";
 
@@ -148,66 +150,6 @@ export function parseFilters(sp: SearchParams): ProductFilters {
   };
 }
 
-// ---------- Search ----------
-
-const normalize = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "") // drop accents left by NFKD (é → e)
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-
-// Words shoppers type that the catalogue spells differently.
-const SYNONYMS: Record<string, string> = {
-  sari: "saree",
-  lehnga: "lehenga",
-  ghagra: "lehenga",
-  chunni: "dupatta",
-  chunri: "dupatta",
-  kurtha: "kurta",
-  suit: "kurta",
-};
-
-const searchIndex = new Map(
-  products.map((p) => {
-    const cat = getCategory(p.category);
-    const text = normalize(
-      [
-        p.name,
-        p.id,
-        cat?.name,
-        p.category,
-        p.fabric,
-        p.work,
-        ...p.colors.map((c) => c.name),
-        ...p.occasion,
-        ...p.tags,
-      ].join(" ")
-    );
-    // A compact copy (no spaces) lets "coord" match "co ord" and "kurtaset" match "kurta set".
-    return [p.id, { text, compact: text.replace(/ /g, "") }];
-  })
-);
-
-function tokenMatches(token: string, entry: { text: string; compact: string }) {
-  const variants = [token, SYNONYMS[token]];
-  // Simple plural handling: "kurtas" → "kurta", "sarees" → "saree".
-  if (token.length > 3 && token.endsWith("s")) variants.push(token.slice(0, -1));
-  return variants.some((v) => v && (entry.text.includes(v) || entry.compact.includes(v)));
-}
-
-/** Every word in the query must appear somewhere in the product's name, category, fabric, colours, tags… */
-export function searchProducts(list: Product[], q: string) {
-  const tokens = normalize(q).split(" ").filter(Boolean);
-  // A query with no searchable words (only symbols, or another script) matches nothing.
-  if (!tokens.length) return q.trim() ? [] : list;
-  return list.filter((p) => {
-    const entry = searchIndex.get(p.id);
-    return !!entry && tokens.every((t) => tokenMatches(t, entry));
-  });
-}
-
 // ---------- Filters ----------
 
 export type FacetKey = "category" | "price" | "size" | "color" | "fabric" | "occasion" | "work";
@@ -249,9 +191,51 @@ export function sortProducts(list: Product[], sort: SortKey) {
   }
 }
 
-/** Search → filter → sort, the full pipeline used by /products. */
+/**
+ * Search → filter → sort, the full pipeline used by /products. `exact` is false when nothing matched
+ * every search word and the results are the closest styles instead.
+ */
 export function queryProducts(f: ProductFilters) {
-  return sortProducts(filterProducts(searchProducts(products, f.q), f), f.sort);
+  const { matches, exact, scores } = searchProducts(products, f.q);
+  const results = sortProducts(filterProducts(matches, f), f.sort);
+  // Close matches go best first, unless the shopper chose an order.
+  if (!exact && f.sort === "featured") results.sort((a, b) => (scores.get(b.id) ?? 0) - (scores.get(a.id) ?? 0));
+  return { results, exact };
+}
+
+// ---------- Search suggestions ----------
+
+const SUGGESTED_PRODUCTS = 5;
+
+/** What the search box shows underneath itself as someone types (served by /api/search). */
+export function getSearchSuggestions(rawQuery: string): SearchSuggestions {
+  const q = rawQuery.trim().slice(0, 100);
+  if (q.length < 2) return { q, categories: [], products: [], exact: true };
+  const { matches, exact } = searchProducts(products, q);
+  const counts = getCategoryCounts();
+  const suggested = categoriesInQuery(q);
+  // Close matches arrive best first; exact ones use the shop's usual order. Either way, styles from
+  // a suggested category go first, so "leh" leads with lehengas.
+  const ordered = (exact ? sortProducts(matches, "featured") : [...matches]).sort(
+    (a, b) => Number(suggested.includes(b.category)) - Number(suggested.includes(a.category))
+  );
+  return {
+    q,
+    categories: suggested.map((slug) => ({
+      slug,
+      name: getCategory(slug)?.name ?? slug,
+      count: counts.get(slug) ?? 0,
+    })),
+    products: ordered.slice(0, SUGGESTED_PRODUCTS).map((p) => ({
+      slug: p.slug,
+      name: p.name,
+      price: p.price,
+      image: p.images[0],
+      category: getCategory(p.category)?.name ?? "",
+      inStock: p.inStock,
+    })),
+    exact,
+  };
 }
 
 // ---------- Facets (filter options with live counts) ----------
@@ -297,7 +281,7 @@ export const FACET_LABELS: Record<FacetKey, string> = {
  * i.e. it respects the search and every *other* group's selection.
  */
 export function getFacets(f: ProductFilters) {
-  const searched = searchProducts(products, f.q);
+  const searched = searchProducts(products, f.q).matches;
   return FACET_KEYS.map((key) => {
     const pool = filterProducts(searched, f, key);
     return {

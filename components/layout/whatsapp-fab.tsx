@@ -1,12 +1,11 @@
-import { site } from "@/lib/site";
-import { whatsappUrl } from "@/lib/whatsapp";
+import { CHAT_MESSAGE, whatsappUrl } from "@/lib/whatsapp";
 import { WhatsAppIcon } from "@/components/ui/icons";
 
 /** Floating "chat with us" button, bottom-right on every store page. */
 export function WhatsAppFab() {
   return (
     <a
-      href={whatsappUrl(`Hi ${site.name}! I have a question.`)}
+      href={whatsappUrl(CHAT_MESSAGE)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp (opens WhatsApp)"

@@ -1,10 +1,18 @@
 "use client";
 
-import { useRef, useTransition, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { cx } from "@/lib/style";
 
 const SEARCH_DEBOUNCE_MS = 450;
+
+const CancelPendingSearch = createContext<(() => void) | null>(null);
+
+/**
+ * Inside a FilterForm: drops a search that's still waiting for its typing pause. The search box calls
+ * it when someone opens a suggestion, so the delayed search can't pull them back to the results.
+ */
+export const useCancelPendingSearch = () => useContext(CancelPendingSearch);
 
 /**
  * Wraps the search box, sort and filter checkboxes in one GET form for /products.
@@ -19,6 +27,10 @@ export function FilterForm({ children, className }: { children: ReactNode; class
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const cancelPending = () => clearTimeout(timer.current);
+
+  // Leaving the page drops a search that hasn't run yet.
+  useEffect(() => () => clearTimeout(timer.current), []);
 
   const navigate = (form: HTMLFormElement) => {
     clearTimeout(timer.current);
@@ -55,7 +67,7 @@ export function FilterForm({ children, className }: { children: ReactNode; class
         }
       }}
     >
-      {children}
+      <CancelPendingSearch value={cancelPending}>{children}</CancelPendingSearch>
     </form>
   );
 }

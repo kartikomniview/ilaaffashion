@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import logoMark from "@/public/icons/logo-mark.png";
 import { nav, site } from "@/lib/site";
 import { getCategories, productsHref } from "@/lib/products";
-import { whatsappUrl } from "@/lib/whatsapp";
+import { CHAT_MESSAGE, whatsappUrl } from "@/lib/whatsapp";
 import { Container } from "@/components/ui/container";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { NavLink } from "@/components/layout/nav-link";
@@ -50,7 +50,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex flex-1 items-center justify-end gap-1 lg:flex-none">
-            <SearchBar size="sm" id="header-search" className="hidden w-52 xl:block" />
+            <SearchBar size="sm" id="header-search" className="hidden w-52 xl:block" popupClassName="right-0 w-96" />
             <Link
               href="/products#search"
               aria-label="Search products"
@@ -59,7 +59,7 @@ export function SiteHeader() {
               <Search className="size-5" strokeWidth={1.75} />
             </Link>
             <a
-              href={whatsappUrl(`Hi ${site.name}! I have a question.`)}
+              href={whatsappUrl(CHAT_MESSAGE)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Chat with us on WhatsApp (opens WhatsApp)"

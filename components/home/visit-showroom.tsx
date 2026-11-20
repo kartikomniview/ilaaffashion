@@ -1,18 +1,17 @@
 import { Clock, MapPin, Phone } from "lucide-react";
-import { mapsUrl, site, telUrl } from "@/lib/site";
+import { mapsEmbedUrl, mapsUrl, site, telUrl } from "@/lib/site";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { Mandala } from "@/components/mandala";
-import { Finial } from "@/components/ui/sparkle";
 
-/** Showroom address, hours and contact actions. Reused on the landing and contact pages. */
+/** Showroom address, hours, contact actions and a satellite map. Reused on the landing and contact pages. */
 export function VisitShowroom({ headingLevel: H = "h2" }: { headingLevel?: "h1" | "h2" }) {
   return (
-    <section aria-labelledby="visit-title" className="py-8 md:py-20">
+    // id: the offer banners link here (/#visit). scroll-mt keeps it clear of the sticky header.
+    <section id="visit" aria-labelledby="visit-title" className="scroll-mt-16 py-8 md:py-20">
       <Container>
-        <div className="relative grid overflow-hidden rounded-[2rem] bg-primary text-light shadow-[0_40px_80px_-40px_rgb(101_13_25/0.8)] md:grid-cols-[1.2fr_1fr]">
+        <div className="relative grid overflow-hidden bg-primary text-light shadow-[0_40px_80px_-40px_rgb(101_13_25/0.8)] md:grid-cols-[1.2fr_1fr]">
           <div className="relative z-10 px-5 py-9 sm:px-10 md:py-16 lg:px-14">
             <p className="mb-3 text-[0.68rem] uppercase tracking-[0.4em] text-gold">— Visit our showroom</p>
             <H id="visit-title" className="font-serif text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.05]">
@@ -61,15 +60,16 @@ export function VisitShowroom({ headingLevel: H = "h2" }: { headingLevel?: "h1" 
             </div>
           </div>
 
-          {/* Decorative city card */}
-          <div aria-hidden className="relative flex min-h-64 items-center justify-center overflow-hidden border-t border-gold/30 md:border-l md:border-t-0">
-            <div className="fabric-zari absolute inset-0 opacity-15" />
-            <Mandala className="mandala-spin absolute w-[130%] text-gold opacity-30" />
-            <div className="relative text-center">
-              <Finial className="mx-auto mb-4 w-12" />
-              <p className="font-serif text-5xl font-medium italic text-gold md:text-7xl">Bhopal</p>
-              <p className="mt-3 text-[0.62rem] uppercase tracking-[0.4em] text-light/70">City of Lakes</p>
-            </div>
+          {/* On wide screens the map stretches to the height of the text beside it. */}
+          <div className="relative min-h-72 border-t border-gold/30 bg-ink/20 sm:min-h-80 md:border-l md:border-t-0">
+            <iframe
+              src={mapsEmbedUrl}
+              title={`Map of the ${site.name} showroom, ${site.address.shortLine}`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+              className="absolute inset-0 size-full border-0"
+            />
           </div>
         </div>
       </Container>

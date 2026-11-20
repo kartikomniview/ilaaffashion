@@ -17,9 +17,10 @@ export const site = {
     whatsapp: "919340185139",
     // Shown on the site and dialled by the Call links (the same number as WhatsApp).
     phone: "+91 93401 85139",
+    // Instagram username (instagram.com/<username>).
+    instagram: "ilaaffashionhouse",
     // TODO(client): replace the values below with the real details before launch.
     email: "hello@ilaaffashion.com",
-    instagram: "ilaaffashion",
     hours: [
       { days: "Monday – Saturday", time: "11:00 am – 8:30 pm" },
       { days: "Sunday", time: "12:00 pm – 6:00 pm" },
@@ -38,9 +39,14 @@ const { line1, line2, city, state } = site.address;
 
 export const fullAddress = `${line1}, ${line2}, ${city}, ${state}`;
 
-export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-  `${site.name}, ${fullAddress}`
-)}`;
+// What Google Maps searches for. For an exact pin, replace it with the shop's coordinates,
+// e.g. "23.2733,77.4152" (right-click the spot in Google Maps to copy them).
+const mapsQuery = encodeURIComponent(`${site.name}, ${fullAddress}`);
+
+export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
+/** Embeddable map of the showroom: satellite photos with street names (t=h), close in (z=17). Needs no API key. */
+export const mapsEmbedUrl = `https://www.google.com/maps?q=${mapsQuery}&t=h&z=17&hl=en&output=embed`;
 
 export const telUrl = `tel:${site.contact.phone.replace(/\s/g, "")}`;
 export const mailUrl = `mailto:${site.contact.email}`;

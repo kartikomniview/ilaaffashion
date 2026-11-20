@@ -47,7 +47,7 @@ export function CategoryShowcase() {
                   </div>
                 </div>
 
-                <h3 className="mt-2.5 font-serif text-base font-medium leading-tight sm:mt-3 sm:text-lg text-ink transition-colors group-hover:text-primary">
+                <h3 className="mt-2.5 font-serif text-base font-semibold leading-tight sm:mt-3 sm:text-lg text-ink transition-colors group-hover:text-primary">
                   {c.name}
                 </h3>
                 <p className="mt-1 text-[0.55rem] uppercase tracking-[0.2em] text-muted sm:text-[0.6rem] sm:tracking-[0.28em]">

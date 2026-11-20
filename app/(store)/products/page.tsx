@@ -47,7 +47,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/products">)
 
 export default async function ProductsPage({ searchParams }: PageProps<"/products">) {
   const filters = parseFilters(await searchParams);
-  const results = queryProducts(filters);
+  const { results, exact } = queryProducts(filters);
   const facets = getFacets(filters);
   const chips = getActiveChips(filters);
   const total = getAllProducts().length;
@@ -117,6 +117,12 @@ export default async function ProductsPage({ searchParams }: PageProps<"/product
                   </p>
                   <ActiveFilters chips={chips} />
                 </div>
+
+                {!exact && results.length > 0 && (
+                  <p className="-mt-4 mb-6 text-sm text-muted">
+                    Nothing matches all of “{filters.q}”, so these are the closest styles.
+                  </p>
+                )}
 
                 <div className="transition-opacity duration-300 group-data-pending:opacity-50">
                   {results.length ? (

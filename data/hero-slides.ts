@@ -1,14 +1,14 @@
 // Home page hero banners, hosted on the brand's S3 bucket (allowed in next.config.ts).
 // The headline and "Shop now" button are printed on each banner, so `alt` repeats that text and the
 // whole banner links to `href`. Desktop banners are about 2.1:1; phones get a near-square version
-// (`mobileSrc`, 1199×1312) of the same banner. The slider's aspect ratios in hero-slider.tsx match
-// these sizes, so keep new banners the same size (or update the ratios there).
-import type { HeroSlide } from "@/lib/types";
+// (`mobileSrc`, 1199×1312) of the same banner. The slider's aspect ratios in components/home/hero.tsx
+// match these sizes, so keep new banners the same size (or update the ratios there).
+import type { BannerSlide } from "@/lib/types";
 
 const BASE = "https://aawsite.s3.ap-south-1.amazonaws.com/illaffashion/hero/v1";
 const MOBILE = "https://aawsite.s3.ap-south-1.amazonaws.com/illaffashion/hero/mobile/v1";
 
-export const heroSlides: HeroSlide[] = [
+export const heroSlides: BannerSlide[] = [
   {
     id: "traditional-sarees",
     src: `${BASE}/4.webp`,
