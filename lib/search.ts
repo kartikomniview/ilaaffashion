@@ -3,8 +3,9 @@
 // - The usual ways of writing Hindi words in English count as the same word (sari = saree = saari,
 //   lehenga = lehnga = lengha, kurti = kurthi = kurtee), plurals don't matter, and small typos are
 //   corrected against the catalogue's own words.
-// - A word that names a category ("saree", "suit", "gown", "co-ord") narrows the results to that
-//   category, so "saree" shows the sarees rather than everything that mentions one.
+// - A word that names a category ("saree", "gown", "co-ord", "pakistani") narrows the results to that
+//   category, so "saree" shows the sarees rather than everything that mentions one. Some words name
+//   more than one ("suit" → kurta sets and Pakistani suits).
 // - Filler words ("for", "with", "women") are skipped, and prices are understood: "under 3000",
 //   "below ₹2,500", "2k-5k", "above 6000", "rs 2000".
 // - When nothing matches every word, the closest styles come back instead, best first, flagged with
@@ -18,7 +19,8 @@ import type { CategorySlug, Product } from "@/lib/types";
 /** Words for each category beyond its own name, including common spellings and other names for it. */
 const CATEGORY_WORDS: Record<CategorySlug, string[]> = {
   kurtis: ["kurti", "tunic"],
-  "kurta-sets": ["kurta set", "suit", "salwar", "salwar suit", "salwar kameez", "kameez"],
+  "kurta-sets": ["kurta set"],
+  "pakistani-suits": ["pakistani", "pakistani suit", "pak suit", "pakistani dress"],
   anarkalis: ["anarkali", "gown"],
   sarees: ["saree", "sadi"],
   lehengas: ["lehenga", "ghagra", "lehenga choli", "chaniya choli", "choli"],
@@ -27,7 +29,13 @@ const CATEGORY_WORDS: Record<CategorySlug, string[]> = {
 };
 
 /** Words that could mean more than one category. */
-const SHARED_CATEGORY_WORDS: [string, CategorySlug[]][] = [["kurta", ["kurtis", "kurta-sets"]]];
+const SUITS: CategorySlug[] = ["kurta-sets", "pakistani-suits"];
+const SHARED_CATEGORY_WORDS: [string, CategorySlug[]][] = [
+  ["kurta", ["kurtis", "kurta-sets"]],
+  ...["suit", "salwar", "shalwar", "salwar suit", "salwar kameez", "shalwar kameez", "kameez"].map(
+    (w) => [w, SUITS] as [string, CategorySlug[]]
+  ),
+];
 
 /** Shoppers' words → the catalogue's words for the same thing. The original word still counts too. */
 const SYNONYMS: Record<string, string[]> = {
@@ -181,6 +189,7 @@ const typoTargets = [
     [
       ...[...index.values()].flatMap((e) => e.words),
       ...Object.values(CATEGORY_WORDS).flat().flatMap((w) => toWords(w)),
+      ...SHARED_CATEGORY_WORDS.flatMap(([w]) => toWords(w)),
       ...categories.flatMap((c) => toWords(c.name)),
       ...Object.keys(SYNONYMS),
     ]
@@ -351,8 +360,10 @@ function startsAWord(start: { word: string; key: string }, entry: Entry) {
 export function categoriesInQuery(q: string): CategorySlug[] {
   const found = new Set(parseQuery(q).categories);
   const last = toWords(q).at(-1);
-  if (last && last.length >= 2 && !STOP_WORDS.has(last) && !isNumber(last)) {
-    const key = spellingKey(last);
+  const key = last && spellingKey(last);
+  // A finished category word was already read above, perhaps as part of a longer phrase: "pakistani
+  // suit" means Pakistani suits only, even though "suit" alone would add kurta sets.
+  if (last && key && last.length >= 2 && !STOP_WORDS.has(last) && !isNumber(last) && !categoryKeys.has(key)) {
     for (const [phrase, slugs] of categoryKeys) if (phrase.startsWith(key)) slugs.forEach((s) => found.add(s));
     for (const c of categories) if (toWords(c.name).some((w) => w.startsWith(last))) found.add(c.slug);
   }

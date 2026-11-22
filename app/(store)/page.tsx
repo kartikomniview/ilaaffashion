@@ -28,8 +28,10 @@ const storeJsonLd = {
     streetAddress: `${site.address.line1}, ${site.address.line2}`,
     addressLocality: site.address.city,
     addressRegion: site.address.state,
+    postalCode: site.address.postalCode,
     addressCountry: site.address.country,
   },
+  geo: { "@type": "GeoCoordinates", ...site.address.google.geo },
   hasMap: mapsUrl,
 };
 

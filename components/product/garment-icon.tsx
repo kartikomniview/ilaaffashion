@@ -18,6 +18,13 @@ const garments: Record<CategorySlug, Garment> = {
     shape: kurta.shape,
     details: `${kurta.details} M44 9 C52 28 54 56 50 88`,
   },
+  // Long, full-sleeved kameez with an embroidered front panel, over straight trousers.
+  "pakistani-suits": {
+    shape:
+      "M23 6 C27 10 37 10 41 6 L52 11 L59 41 L51.5 43 L46.5 23 L47 46 L51 68 L13 68 L17 46 L17.5 23 L12.5 43 L5 41 L12 11 Z M20.5 70 L43.5 70 L42 91 L33.5 91 L32 76 L30.5 91 L22 91 Z",
+    details:
+      "M27.5 8.2 C29 13 35 13 36.5 8.2 M27.4 9.5 L28 34 L36 34 L36.6 9.5 M13.9 63 L50.1 63 M50.8 39.5 L58.1 37.5 M13.2 39.5 L5.9 37.5 M21.7 87 L30.9 87 M33.1 87 L42.3 87",
+  },
   anarkalis: {
     shape:
       "M24 6 C28 10 36 10 40 6 L50 11 L57 40 L50.5 42 L45 23 L44 33 C52 48 59 68 62 90 L2 90 C5 68 12 48 20 33 L19 23 L13.5 42 L7 40 L14 11 Z",

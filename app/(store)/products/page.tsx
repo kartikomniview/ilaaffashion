@@ -38,8 +38,8 @@ export async function generateMetadata({ searchParams }: PageProps<"/products">)
   return {
     title: f.q ? `Search: ${f.q}` : category ? `${category.name} for Women` : "Shop the Collection",
     description: category
-      ? `${category.blurb} Shop ${category.name.toLowerCase()} at ilaaf Fashion House, Bhopal.`
-      : "Kurtis, kurta sets, anarkalis, sarees, lehengas, co-ords and dupattas at ilaaf Fashion House, Bhopal.",
+      ? `${category.blurb} Shop ${category.name} at ilaaf Fashion House, Bhopal.`
+      : "Kurtis, kurta sets, original Pakistani suits, anarkalis, sarees, lehengas, co-ords and dupattas at ilaaf Fashion House, Bhopal.",
     alternates: { canonical: onlyCategory ? productsHref({ category: [category.slug] }) : "/products" },
     ...(indexable ? {} : { robots: { index: false, follow: true } }),
   };

@@ -3,9 +3,9 @@ import type { Category } from "@/lib/types";
 
 // Category photos with the background removed, so the model can step out of the tile. Kept in
 // /public/images/categories. Kurtis, Kurta Sets and Co-ords come from the S3 originals
-// (illaffashion/catagories/v1/<slug>.webp). The rest use product photos, reframed to match: the Teal
-// Georgette Anarkali, Bottle Green Zari Brocade Silk Saree, Mustard Mirror-Work Lehenga and Rani Pink
-// Bandhani Dupatta.
+// (illaffashion/catagories/v1/<slug>.webp). The rest use product photos, reframed to match: the Mint
+// Embroidered Lawn Suit, Teal Georgette Anarkali, Bottle Green Zari Brocade Silk Saree, Mustard
+// Mirror-Work Lehenga and Rani Pink Bandhani Dupatta.
 const IMG = "/images/categories";
 
 export const categories: Category[] = [
@@ -14,6 +14,12 @@ export const categories: Category[] = [
     name: "Kurtis",
     blurb: "Easy, everyday kurtis for college, office and everything in between.",
     image: `${IMG}/kurtis.webp`,
+  },
+  {
+    slug: "pakistani-suits",
+    name: "Original Pakistani Suits",
+    blurb: "Genuine Pakistani lawn and party suits: long kameez, rich embroidery and generous dupattas.",
+    image: `${IMG}/pakistani-suits-mint.webp`,
   },
   {
     slug: "kurta-sets",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { LucideIcon } from "lucide-react";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { fullAddress, instagramUrl, mailUrl, mapsUrl, site, telUrl } from "@/lib/site";
+import { fullAddress, instagramUrl, mailUrl, mapsEmbedUrl, mapsUrl, site, telUrl } from "@/lib/site";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
@@ -23,7 +23,8 @@ const channels: { icon: Icon; label: string; value: string; href: string; extern
   { icon: InstagramIcon, label: "Instagram", value: `@${site.contact.instagram}`, href: instagramUrl, external: true },
 ];
 
-const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(`${site.name}, ${fullAddress}`)}&z=16&output=embed`;
+// Street map, a little wider than the satellite view on the home page.
+const mapEmbed = mapsEmbedUrl({ span: 1800 });
 
 export default function ContactPage() {
   return (
@@ -64,7 +65,7 @@ export default function ContactPage() {
                   <br />
                   {site.address.line2}
                   <br />
-                  {site.address.city}, {site.address.state}
+                  {site.address.city}, {site.address.state} {site.address.postalCode}
                 </address>
                 <a
                   href={mapsUrl}

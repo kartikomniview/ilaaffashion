@@ -63,7 +63,7 @@ export function VisitShowroom({ headingLevel: H = "h2" }: { headingLevel?: "h1" 
           {/* On wide screens the map stretches to the height of the text beside it. */}
           <div className="relative min-h-72 border-t border-gold/30 bg-ink/20 sm:min-h-80 md:border-l md:border-t-0">
             <iframe
-              src={mapsEmbedUrl}
+              src={mapsEmbedUrl({ satellite: true })}
               title={`Map of the ${site.name} showroom, ${site.address.shortLine}`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

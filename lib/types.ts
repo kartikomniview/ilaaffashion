@@ -3,6 +3,7 @@
 
 export const CATEGORY_SLUGS = [
   "kurtis",
+  "pakistani-suits",
   "kurta-sets",
   "anarkalis",
   "sarees",
@@ -25,6 +26,7 @@ export const FABRICS = [
   "Muslin",
   "Linen",
   "Crepe",
+  "Lawn",
 ] as const;
 export type Fabric = (typeof FABRICS)[number];
 
@@ -83,8 +85,11 @@ export interface Category {
   slug: CategorySlug;
   name: string;
   blurb: string;
-  /** Portrait 4:5 photo of the model on a transparent background, used on the category tiles. */
-  image: string;
+  /**
+   * Portrait 4:5 photo of the model on a transparent background, used on the category tiles.
+   * Leave it out until a photo exists: the tile shows a drawing of the garment instead.
+   */
+  image?: string;
 }
 
 export const SORT_KEYS = ["featured", "newest", "price-asc", "price-desc"] as const;

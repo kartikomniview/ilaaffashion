@@ -41,7 +41,11 @@ export function ProductCard({ product, preload, className }: { product: Product;
           <p className="text-[0.6rem] uppercase tracking-[0.28em] text-muted">
             {category?.name} · {product.fabric}
           </p>
-          <h3 className="mt-1 font-serif text-base font-medium sm:text-[1.15rem] leading-snug text-ink transition-colors group-hover:text-primary">
+          {/* One line only, cut with an ellipsis; the title shows the full name on hover. */}
+          <h3
+            title={product.name}
+            className="mt-1 truncate font-serif text-base font-medium sm:text-[1.15rem] leading-snug text-ink transition-colors group-hover:text-primary"
+          >
             {product.name}
           </h3>
           <div className="mt-1.5 flex items-center justify-between gap-2">
