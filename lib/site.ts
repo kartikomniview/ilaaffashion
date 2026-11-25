@@ -16,7 +16,8 @@ export const site = {
     google: {
       placeId: "ChIJzy3cJmhDfDkRUUlMdPaOAPc",
       featureId: "0x397c436826dc2dcf:0xf7008ef6744c4951",
-      geo: { latitude: 23.2524828, longitude: 77.4148123 },
+      // The pin from the client's shared link (maps.app.goo.gl/2TrDJL4oUd9oGCb77).
+      geo: { latitude: 23.2525244, longitude: 77.4148529 },
     },
   },
   contact: {
@@ -46,10 +47,16 @@ const { line1, line2, city, state, postalCode, google } = site.address;
 
 export const fullAddress = `${line1}, ${line2}, ${city}, ${state} ${postalCode}`;
 
-// Opens the shop's Google listing by its place ID. Google searches the query only if the ID stops
-// resolving; it is kept short because Google finds nothing for the full address with the landmarks.
-const mapsQuery = encodeURIComponent(`${site.name}, ${city} ${postalCode}`);
-export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}&query_place_id=${google.placeId}`;
+// Opens the shop's own Google listing at its pin (the place the client's shared link points to).
+// The shared link itself is a directions link with a fixed starting point, so it is not used as is.
+const mapsPlaceName = encodeURIComponent("ILAAF FASHION HOUSE").replace(/%20/g, "+");
+export const mapsUrl = (() => {
+  const { latitude, longitude } = google.geo;
+  return (
+    `https://www.google.com/maps/place/${mapsPlaceName}/@${latitude},${longitude},17z` +
+    `/data=!4m6!3m5!1s${google.featureId}!8m2!3d${latitude}!4d${longitude}`
+  );
+})();
 
 /**
  * Embeddable map pinned to the shop's Google listing, with its name card. Needs no API key.
