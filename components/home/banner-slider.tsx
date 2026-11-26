@@ -16,20 +16,14 @@ import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import type { BannerSlide } from "@/lib/types";
 import { cx } from "@/lib/style";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 const SLIDE_MS = 5000;
 const DRAG_START_PX = 8; // movement before a press counts as a drag rather than a tap
 const SWIPE_MIN_PX = 50; // drag distance that moves to the next slide
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 // Tailwind's `sm` breakpoint. Below it, slides that have a `mobileSrc` show that version instead, so
 // a frame for such banners should switch its aspect ratio at the same width (`sm:aspect-…`).
 const WIDE_SCREEN = "(min-width: 40rem)";
-
-function subscribeReducedMotion(onChange: () => void) {
-  const query = window.matchMedia(REDUCED_MOTION);
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
-}
 
 function subscribeVisibility(onChange: () => void) {
   document.addEventListener("visibilitychange", onChange);
@@ -78,12 +72,8 @@ export function BannerSlider({
   const [animate, setAnimate] = useState(true);
   const [dragX, setDragX] = useState<number | null>(null);
   const [focused, setFocused] = useState(false);
-  // The server snapshot says "reduced", so autoplay only starts once the browser confirms motion is fine.
-  const reducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    () => window.matchMedia(REDUCED_MOTION).matches,
-    () => true
-  );
+  // Reads "reduced" until the browser confirms motion is fine, so autoplay never starts early.
+  const reducedMotion = useReducedMotion();
   const tabHidden = useSyncExternalStore(subscribeVisibility, () => document.hidden, () => false);
   const hintId = useId();
   const drag = useRef<{ x: number; y: number; started: boolean } | null>(null);

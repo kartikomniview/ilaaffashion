@@ -143,3 +143,14 @@ export interface BannerSlide {
   /** Where tapping the banner goes. */
   href: string;
 }
+
+/** A clip in the home page's "Moments in Style" row. */
+export interface StyleVideo {
+  id: string;
+  /** Absolute URL of the portrait 9:16 MP4. */
+  src: string;
+  /** Absolute URL of the cover image shown until the clip plays. Its host must be allowed in next.config.ts. */
+  poster: string;
+  /** The category the clip shows: its name captions the tile, which links to that category. */
+  category: CategorySlug;
+}

@@ -1,21 +1,13 @@
 "use client";
 
-import {
-  useEffect,
-  useEffectEvent,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type PointerEvent,
-  type ReactNode,
-  type SyntheticEvent,
-} from "react";
+import { useEffect, useEffectEvent, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 import { cropStyle, photoHref, scaleSizes, type ProductView } from "@/lib/product-views";
 import { cx } from "@/lib/style";
+import { ModalDialog } from "@/components/ui/modal-dialog";
 
 const MAX_ZOOM = 4;
 const TAP_ZOOM = 2.5; // double-tap / double-click
@@ -110,7 +102,7 @@ export function PhotoViewer({
   }
 
   return (
-    <ModalShell label={label} onClose={goBack}>
+    <ModalDialog label={label} onClose={goBack} className="bg-background text-ink backdrop:bg-ink/40">
       <Viewer
         slug={slug}
         productName={productName}
@@ -123,7 +115,7 @@ export function PhotoViewer({
           </button>
         }
       />
-    </ModalShell>
+    </ModalDialog>
   );
 }
 
@@ -131,56 +123,6 @@ export function PhotoViewer({
 const iconButtonBase =
   "focus-ring size-10 shrink-0 items-center justify-center rounded-full border border-gold/50 bg-surface/90 text-ink transition-colors hover:border-primary hover:bg-primary hover:text-light disabled:pointer-events-none disabled:opacity-35";
 const iconButton = `${iconButtonBase} inline-flex`;
-
-/** A modal <dialog> over the current page: traps focus, hides the page from screen readers and locks its scroll. */
-function ModalShell({
-  label,
-  onClose,
-  children,
-}: {
-  label: string;
-  onClose: () => void;
-  children: ReactNode;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const mounted = useRef(false);
-
-  useLayoutEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    mounted.current = true;
-    if (!dialog.open) dialog.showModal();
-    const root = document.documentElement;
-    const overflow = root.style.overflow;
-    root.style.overflow = "hidden";
-    return () => {
-      mounted.current = false;
-      root.style.overflow = overflow;
-      // Closed while still in the page, so the browser returns focus to the link that opened it.
-      dialog.close();
-    };
-  }, []);
-
-  return (
-    <dialog
-      ref={ref}
-      aria-label={label}
-      onCancel={(e) => {
-        e.preventDefault(); // Esc: leave the dialog open until the route changes
-        onClose();
-      }}
-      // Some browsers close it themselves without a cancellable `cancel` (Android's Back gesture does).
-      // Ignore the late `close` event from our own cleanup: after unmounting, or once the dialog has
-      // been reopened (Strict Mode runs the effect twice).
-      onClose={(e: SyntheticEvent<HTMLDialogElement>) => {
-        if (mounted.current && !e.currentTarget.open) onClose();
-      }}
-      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden border-0 bg-background p-0 text-ink backdrop:bg-ink/40"
-    >
-      {children}
-    </dialog>
-  );
-}
 
 function Viewer({
   slug,

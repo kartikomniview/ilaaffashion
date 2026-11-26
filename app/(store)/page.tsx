@@ -6,6 +6,7 @@ import { Hero } from "@/components/home/hero";
 import { CategoryShowcase } from "@/components/home/category-showcase";
 import { ProductRail } from "@/components/home/product-rail";
 import { OfferBanners } from "@/components/home/offer-banners";
+import { MomentsInStyle } from "@/components/home/moments-in-style";
 import { OccasionTiles } from "@/components/home/occasion-tiles";
 import { VisitShowroom } from "@/components/home/visit-showroom";
 
@@ -49,6 +50,8 @@ export default function Home() {
         products={getNewArrivals(8)}
         viewAllHref={productsHref({ sort: "newest" })}
       />
+
+      <MomentsInStyle />
 
       <OccasionTiles />
 
